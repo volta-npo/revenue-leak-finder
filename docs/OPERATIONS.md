@@ -10,7 +10,7 @@ A guided analysis workbook for spotting where a small business is losing sales o
 2. Attach evidence in the evidence locker.
 3. Complete the v1 workbench: Revenue Leak Diagnostic Board.
 4. Resolve readiness warnings.
-5. Certify v3 gates only with real project evidence.
+5. Certify release gates only with real project evidence.
 6. Export JSON, CSV, Markdown, and print packets for the project folder.
 
 ## Domain outputs
