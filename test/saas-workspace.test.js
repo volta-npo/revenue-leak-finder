@@ -1,0 +1,25 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { config } from '../src/config.js';
+import { createSaasWorkspace, addWorkspace, switchWorkspace, recordWorkspaceExport, summarizeWorkspaceAnalytics, exportWorkspaceBundle, importWorkspaceBundle } from '../src/saas-workspace.js';
+test('SaaS workspace supports multi-client switching and analytics', () => {
+    const workspace = createSaasWorkspace(config, '2026-01-01T00:00:00.000Z');
+    assert.equal(workspace.workspaces.length, 1);
+    const second = addWorkspace(workspace, 'Second Client', '2026-01-02T00:00:00.000Z');
+    switchWorkspace(workspace, second.id, '2026-01-03T00:00:00.000Z');
+    recordWorkspaceExport(workspace, 'bundle', '2026-01-04T00:00:00.000Z');
+    const analytics = summarizeWorkspaceAnalytics(workspace, 87);
+    assert.equal(analytics.workspaceCount, 2);
+    assert.equal(analytics.activeClient, 'Second Client');
+    assert.equal(analytics.exportCount, 1);
+    assert.equal(analytics.readiness, 87);
+});
+test('SaaS workspace bundle round trips and rejects wrong slugs', () => {
+    const workspace = createSaasWorkspace(config, '2026-01-01T00:00:00.000Z');
+    const bundle = exportWorkspaceBundle(config, workspace, { example: true });
+    const imported = importWorkspaceBundle(config, bundle);
+    assert.equal(imported.product.slug, config.slug);
+    assert.equal(imported.workspaceState.workspaces.length, 1);
+    assert.throws(() => importWorkspaceBundle(config, { product: { slug: 'wrong' }, workspaceState: workspace }), /slug/);
+});
+//# sourceMappingURL=saas-workspace.test.js.map
